@@ -1,0 +1,73 @@
+﻿/* TinyMCE editör çerçevesi */
+.tox-tinymce {
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    width: 794px !important; /* A4 genişliği */
+    margin: 20px auto;
+    background-color: #f5f5f5;
+    overflow: hidden; /* Alt kısımda taşan içeriği gizle */
+}
+
+/* Editör içeriği (A4 kağıdı gibi) */
+.tox-edit-area iframe {
+    background-color: #fff !important;
+    border: none; /* Kenarlıkları kaldır */
+    box-shadow: none; /* Gölgeleri kaldır */
+    height: 100% !important; /* İframe’in yüksekliğini tam doldur */
+}
+
+/* Yazı tipi ve genel stil */
+body#tinymce {
+    font-family: 'Calibri', 'Arial', sans-serif !important;
+    font-size: 12pt !important;
+    line-height: 1.5;
+    color: #000;
+    margin: 25mm !important; /* Word benzeri kenar boşlukları */
+    max-width: 744px; /* İçerik genişliği */
+    box-sizing: border-box;
+    min-height: 1073px; /* İçeriğin tam A4 yüksekliğini kaplamasını sağla */
+}
+
+    /* Paragraf ve başlıklar */
+    body#tinymce p {
+        margin: 0 0 12pt 0;
+    }
+
+    body#tinymce h1, body#tinymce h2, body#tinymce h3 {
+        font-family: 'Calibri', 'Arial', sans-serif;
+        margin: 12pt 0 6pt 0;
+    }
+
+    /* Tablo stilleri */
+    body#tinymce table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 12pt 0;
+    }
+
+    body#tinymce table, body#tinymce th, body#tinymce td {
+        border: 1px solid #ccc;
+        padding: 8px;
+    }
+
+/* Araç çubuğu ve menü için stil */
+.tox-menubar, .tox-toolbar {
+    background-color: #f8f8f8 !important;
+    border-bottom: 1px solid #ddd;
+}
+
+.tox-tbtn, .tox-mbtn {
+    font-family: 'Calibri', 'Arial', sans-serif !important;
+}
+
+/* A4 konteyner stili */
+.tinymce-container {
+    margin: 0 auto;
+    width: 794px;
+    height: 1123px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border: 1px solid #ddd;
+    overflow: hidden; /* Alt kısımda ek görünenleri gizle */
+}

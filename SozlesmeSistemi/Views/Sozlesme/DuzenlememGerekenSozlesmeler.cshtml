@@ -1,0 +1,214 @@
+﻿@model List<SozlesmeSistemi.Models.Contract>
+
+@{
+    ViewData["Title"] = "DuzenlememGerekenSozlesmeler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@Html.AntiForgeryToken() <!-- Anti-forgery token -->
+@* @if (ViewBag.Message != null)
+{
+    <div class="alert alert-info">@ViewBag.Message</div>
+}
+
+<div id="messageContainer"></div> *@
+
+<section class="content">
+    <div class="row layout-top-spacing">
+        <div class="col-lg-12 layout-spacing">
+            <div class="widget-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Sözleşme Düzenle</h5>
+                    </div>
+
+
+                    <div class="card-body">
+                        <table id="contractTable" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Sıra No</th>
+                                    <th>Sözleşme Adı</th>
+                                    <th>Sorumlu Kişi</th>
+                                    <th>Red Gerekçesi</th>
+                                    <th>İşlemler</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    int rowNumber = 1;
+                                    foreach (var request in Model)
+                                    {
+                                        <tr>
+                                            <td>@rowNumber</td>
+                                            <td>@request.Title</td>
+                                            <td>@request.User?.Username</td>
+                                            <td>@request.RejectionReason</td>
+                                            <td>
+                                                <a asp-action="DuzenlemeSayfasi" asp-route-id="@request.Id" class="btn btn-primary btn-sm">Düzenle</a>
+                                                <button class="btn btn-success btn-sm send-contract" data-id="@request.Id">Gönder</button>
+                                                <input type="hidden" id="Id_@request.Id" value="@request.Id" />
+                                            </td>
+
+                                        </tr>
+                                        rowNumber++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center">Henüz sözleşme yok.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="~/js/tinymce-custom.js"></script>
+    <script src="~/lib/DataTables/datatables.min.js"></script>
+    <script src="~/js/datatablefiltre.js"></script>
+
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.send-contract').click(function () {
+                var contractId = $(this).data('id');
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '/Sozlesme/SendContract',
+                    type: 'POST',
+                    data: {
+                        id: contractId,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#messageContainer').html('<div class="alert alert-success">' + response.message + '</div>');
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000); // 2 saniye sonra sayfayı yenile
+                        } else {
+                            $('#messageContainer').html('<div class="alert alert-danger">' + response.message + '</div>');
+                        }
+                    },
+                    error: function () {
+                        $('#messageContainer').html('<div class="alert alert-danger">Bir hata oluştu. Lütfen tekrar deneyin.</div>');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+
+
+@* 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@model List<SozlesmeSistemi.Models.Contract>
+
+<h2>Düzenlemem Gereken Sözleşmeler</h2>
+
+@Html.AntiForgeryToken() <!-- Anti-forgery token -->
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-info">@ViewBag.Message</div>
+}
+
+<div id="messageContainer"></div>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sözleşme Adı</th>
+                <th>Sorumlu Kişi</th>
+                <th>Red Gerekçesi</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var contract in Model)
+            {
+                <tr>
+                    <td>@contract.Title</td>
+                    <td>@contract.User?.Username</td>
+                    <td>@contract.RejectionReason</td>
+                    <td>
+                        <a asp-action="DuzenlemeSayfasi" asp-route-id="@contract.Id" class="btn btn-primary btn-sm">Düzenle</a>
+                        <button class="btn btn-success btn-sm send-contract" data-id="@contract.Id">Gönder</button>
+                        <input type="hidden" id="Id_@contract.Id" value="@contract.Id" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Şu anda düzenlenmesi gereken sözleşme bulunmamaktadır.</p>
+}
+
+@section Scripts {
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.send-contract').click(function () {
+                var contractId = $(this).data('id');
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '/Sozlesme/SendContract',
+                    type: 'POST',
+                    data: {
+                        id: contractId,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#messageContainer').html('<div class="alert alert-success">' + response.message + '</div>');
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000); // 2 saniye sonra sayfayı yenile
+                        } else {
+                            $('#messageContainer').html('<div class="alert alert-danger">' + response.message + '</div>');
+                        }
+                    },
+                    error: function () {
+                        $('#messageContainer').html('<div class="alert alert-danger">Bir hata oluştu. Lütfen tekrar deneyin.</div>');
+                    }
+                });
+            });
+        });
+    </script>
+}
+ *@

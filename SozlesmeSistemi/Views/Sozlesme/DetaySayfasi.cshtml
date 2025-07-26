@@ -1,0 +1,10 @@
+﻿@model SozlesmeSistemi.Models.Contract
+
+@{
+    <h2>Sözleşme Detayları</h2>
+
+
+    @await Component.InvokeAsync("ContractProgress", new { contractId = Model.Id })
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+

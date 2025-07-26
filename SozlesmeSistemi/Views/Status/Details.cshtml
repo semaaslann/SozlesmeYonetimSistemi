@@ -1,0 +1,103 @@
+﻿@model SozlesmeSistemi.Models.Contract
+
+@{
+    ViewData["Title"] = "Sözleşme Detayları";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Sözleşme Detayları</h2>
+
+<div class="card">
+    <div class="card-header">
+        <h5>@Model.Title</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Sözleşme Adı</dt>
+            <dd class="col-sm-9">@Model.Title</dd>
+
+            <dt class="col-sm-3">Konusu</dt>
+            <dd class="col-sm-9">@Model.SozlesmeKonusu</dd>
+
+            <dt class="col-sm-3">Durum</dt>
+            <dd class="col-sm-9">@Model.CurrentStatus</dd>
+
+            @* <dt class="col-sm-3">İmza/Onay Tarihi</dt>
+            <dd class="col-sm-9">@(Model.ImzaOnayTarihi.HasValue ? Model.ImzaOnayTarihi.Value.ToString("dd.MM.yyyy") : "Belirtilmemiş")</dd> *@
+
+            <dt class="col-sm-3">Sorumlu</dt>
+            <dd class="col-sm-9">@Model.User?.Name</dd>
+        </dl>
+
+        <!-- İmzalayanlar ve İmzalar -->
+        <h4>İmzalayanlar</h4>
+        @if (ViewBag.Signers != null && ViewBag.Signers.Count > 0)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>İmzalayan</th>
+                        <th>İmza</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var signer in ViewBag.Signers)
+                    {
+                        <tr>
+                            <td>@signer.Name</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(signer.Signature))
+                                {
+                                    <img src="data:image/png;base64,@signer.Signature" alt="İmza" style="max-width: 300px; max-height: 150px; border: 1px solid black;" />
+                                }
+                                else
+                                {
+                                    <span>İmza yok</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Bu sözleşme için imzalayan kişi kaydı bulunamadı.</p>
+        }
+
+        <!-- Paraflayanlar ve Paraflar -->
+        <h4>Paraflayanlar</h4>
+        @if (ViewBag.Parafs != null && ViewBag.Parafs.Count > 0)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Paraflayan</th>
+                        <th>Sıra</th>
+                        @* <th>Paraf Tarihi</th> *@
+                        <th>Not</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var paraf in ViewBag.Parafs)
+                    {
+                        <tr>
+                            <td>@paraf.Name</td>
+                            <td>@paraf.Sira</td>
+                            @* <td>@(paraf.ParafTarihi.HasValue ? paraf.ParafTarihi.Value.ToString("dd.MM.yyyy HH:mm") : "Henüz paraflanmadı")</td> *@
+                            <td>@paraf.Not</td>
+                            <td>@(paraf.IsParaflandi ? "Paraflandı" : "Bekliyor")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Bu sözleşme için paraflayan kişi kaydı bulunamadı.</p>
+        }
+    </div>
+</div>
+
+<a asp-action="Imzalananlar" class="btn btn-secondary">Geri Dön</a>

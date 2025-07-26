@@ -1,0 +1,44 @@
+﻿@model SozlesmeSistemi.Models.Contract
+@{
+    ViewData["Title"] = "Sözleşmeyi Parafla";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2>Sözleşmeyi Parafla</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Sözleşme Bilgileri</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Başlık:</strong> @Model.Title</p>
+            <p><strong>Açıklama:</strong> @Model.Content</p>
+            <p><strong>Oluşturan:</strong> @Model.User?.Name</p>
+            <p><strong>Paraflayanlar:</strong> @(ViewBag.Paraflayanlar != null ? string.Join(", ", ViewBag.Paraflayanlar) : "Yok")</p>
+            <p><strong>Durum:</strong> <span class="badge bg-warning">@Model.CurrentStatus</span></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Paraf İşlemi</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="SaveParaf" method="post">
+                <input type="hidden" name="contractId" value="@ViewBag.ContractId" />
+                <div class="mb-3">
+                    <label class="form-label">Paraf Notu (isteğe bağlı):</label>
+                    <textarea name="not" class="form-control" rows="4">@ViewBag.Not</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Parafla</button>
+                <a asp-action="ParafBekleyenler" class="btn btn-secondary">Geri Dön</a>
+            </form>
+        </div>
+    </div>
+</div>

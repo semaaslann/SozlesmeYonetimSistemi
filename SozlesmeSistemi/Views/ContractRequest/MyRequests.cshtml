@@ -1,0 +1,180 @@
+﻿@model List<SozlesmeSistemi.Models.ContractRequest>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "MyRequests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+
+<section class="content">
+    <div class="row layout-top-spacing">
+        <div class="col-lg-12 layout-spacing">
+            <div class="widget-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Sözleşme İstek Listesi</h5>
+                    </div>
+                    <div class="card-body">
+                        <table id="contractTable" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Sıra Numarası</th> <!-- Sıra numarası sütunu -->
+                                    <th>Başlık</th>
+                                    <th>Talep Eden</th>
+                                    <th>Tahmini Bitiş Tarihi</th>
+                                    <th>Birim</th>
+                                    <th>İşlem</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    int rowNumber = 1;
+                                    foreach (var request in Model)
+                                    {
+                                        <tr>
+                                            <td>@rowNumber</td>
+                                            <td>@request.Title</td>
+                                            <td>@request.RequestedByUser?.Name</td>
+                                            <td>@request.EstimatedEndDate.ToShortDateString()</td>
+                                            <td>@(request.Unit != null ? request.Unit.Name : "Birim Bulunamadı")</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#requestModal_@request.Id">
+                                                    Detay
+                                                </button>
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="requestModal_@request.Id" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Talep Detayı - @request.Title</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <dl class="row">
+
+                                                                    <dt class="col-sm-4">Başlık</dt>
+                                                                    <dd class="col-sm-8">@request.Title</dd>
+
+
+                                                                 
+
+                                                                    <dt class="col-sm-4">Açıklama</dt>
+                                                                    <dd class="col-sm-8">@request.Justification</dd>
+
+                                                                    @*                 <dt class="col-sm-4">Birim</dt>
+                                                            <dd class="col-sm-8">@request.Unit?.Name</dd> *@
+
+                                                                    <dt class="col-sm-4">Tahmini Bitiş Tarihi</dt>
+                                                                    <dd class="col-sm-8">@request.EstimatedEndDate.ToShortDateString()</dd>
+
+                                                                    <dt class="col-sm-4">Talep Eden</dt>
+                                                                    <dd class="col-sm-8">@request.RequestedByUser?.Name</dd>
+                                                                </dl>
+                                                            </div>
+                                                            <div class="modal-footer d-flex justify-content-between">
+                                                                <form asp-action="Reject" method="post" class="d-flex w-50 align-items-center reject-form" data-request-id="@request.Id">
+                                                                    <input type="hidden" name="requestId" value="@request.Id" />
+                                                                    <input type="text" name="rejectionReason" class="form-control me-2" placeholder="Red gerekçesi" required style="flex: 1;" />
+                                                                    <button type="submit" class="btn btn-danger btn-custom">Reddet</button>
+                                                                </form>
+
+                                                                <form asp-action="Approve" method="post" class="d-flex w-50 justify-content-end align-items-center approve-form" data-request-id="@request.Id">
+                                                                    <input type="hidden" name="id" value="@request.Id" />
+                                                                    <select name="selectedSubordinateId" class="form-select me-2" required style="flex: 1;">
+                                                                        <option value="" disabled selected>Personel Seç</option>
+                                                                        @foreach (var personel in (SelectList)ViewBag.Subordinates)
+                                                                        {
+                                                                            <option value="@personel.Value">@personel.Text</option>
+                                                                        }
+                                                                    </select>
+                                                                    <button type="submit" class="btn btn-success btn-custom">Onayla ve Görevlendir</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                        rowNumber++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center">Henüz sözleşme yok.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/DataTables/datatables.min.js"></script>
+    <script src="~/js/datatablefiltre.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Reddet formunun gönderimini ele al
+            $('.reject-form').on('submit', function (e) {
+                e.preventDefault(); // Varsayılan form gönderimini durdur
+
+                var form = $(this);
+                var requestId = form.data('request-id');
+
+                // SweetAlert2 ile popup göster
+                Swal.fire({
+                    title: 'Başarılı!',
+                    text: 'İstek başarıyla reddedildi.',
+                    icon: 'success',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#dc3545' // Kırmızı buton
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Formu manuel olarak gönder
+                        form.off('submit'); // Aynı formun tekrar submit olayını tetiklemesini önle
+                        form.submit(); // Formu gönder, sayfa yenilenecek ama mevcut sayfada kalacak
+                    }
+                });
+            });
+
+            // Onayla ve Görevlendir formunun gönderimini ele al
+            $('.approve-form').on('submit', function (e) {
+                e.preventDefault(); // Varsayılan form gönderimini durdur
+
+                var form = $(this);
+                var requestId = form.data('request-id');
+
+                // SweetAlert2 ile popup göster
+                Swal.fire({
+                    title: 'Başarılı!',
+                    text: 'İstek başarıyla gönderildi.',
+                    icon: 'success',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#28a745' // Yeşil buton
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Formu manuel olarak gönder
+                        form.off('submit'); // Aynı formun tekrar submit olayını tetiklemesini önle
+                        form.submit(); // Formu gönder, sayfa yenilenecek ama mevcut sayfada kalacak
+                    }
+                });
+            });
+        });
+    </script>
+
+
+}

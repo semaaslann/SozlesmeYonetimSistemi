@@ -1,0 +1,75 @@
+﻿@model IEnumerable<SozlesmeSistemi.Models.ContractRequest>
+
+@{
+    ViewData["Title"] = "MySentRequests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+
+<section class="content">
+    <div class="row layout-top-spacing">
+        <div class="col-lg-12 layout-spacing">
+            <div class="widget-content">
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h5 class="mb-0">İstek Listesi</h5>
+                        <a href="@Url.Action("Create", "ContractRequest")" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Yeni İstek Oluştur
+                        </a>
+                    </div>
+
+
+                    <div class="card-body">
+                        <table id="contractTable" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Sıra No</th>
+                                    <th>Başlık</th>
+                                    <th>Sorumlu Kişi</th>
+                                    <th>Son Onay Tarihi</th>
+                                    <th>Birim</th>
+                                     <th>Durumu</th> 
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    int rowNumber = 1;
+                                    foreach (var request in Model)
+                                    {
+                                        <tr>
+                                            <td>@rowNumber</td>
+                                            <td>@request.Title</td>
+                                            <td>@(request.RequestedToUser != null ? request.RequestedToUser.Username : "Kullanıcı Bulunamadı")</td>
+                                            <td>@request.RequestDate.ToString("dd.MM.yyyy")</td>
+                                            <td>@(request.Unit != null ? request.Unit.Name : "Birim Bulunamadı")</td>
+                                           <td>@request.Status</td> 
+
+                                        </tr>
+                                        rowNumber++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center">Henüz sözleşme yok.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="~/js/tinymce-custom.js"></script>
+    <script src="~/lib/DataTables/datatables.min.js"></script>
+    <script src="~/js/datatablefiltre.js"></script>
+}

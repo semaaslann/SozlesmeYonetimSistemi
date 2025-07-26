@@ -1,0 +1,263 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SozlesmeSistemi</title>
+    <title>Sözleşme Sistemi </title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @*      <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
+    <link rel="stylesheet" href="~/SozlesmeSistemi.styles.css" asp-append-version="true" />
+
+    <!--boostrap css file-->
+    @*      <link rel="stylesheet" href="~/css/bootstrap.min.css" asp-append-version="true" />
+    *@
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/sweetalert2.min.css">
+    <link rel="stylesheet" href="~/css/tinymce-custom.css" />
+    <link rel="stylesheet" href="~/lib/DataTables/datatables.min.css" />
+
+    <link rel="stylesheet" href="~/css/select2.min.css" />
+
+    @RenderSection("Styles", required: false)
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg" style="background-color: #0e2238; position: sticky; top: 0; z-index: 1000;">
+        <div class="container-fluid">
+            <!-- Arama Formu (Boş, isteğe bağlı) -->
+            <div class="mx-auto order-0">
+                <form class="d-flex" role="search">
+                    <!-- <input class="form-control me-2" type="search" placeholder="Ara..." aria-label="Search" style="width: 300px;">
+                    <button class="btn btn-outline-light" type="submit">Ara</button> -->
+                </form>
+            </div>
+            <!-- Profil Menüsü -->
+            <div class="navbar-right d-flex align-items-center">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="~/icons/user.png" alt="Profil" class="rounded-circle" width="35" height="35" style="filter: brightness(0) invert(1);">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a asp-controller="Login" asp-action="Profil" class="dropdown-item">Profilim</a></li>
+                        <li><a class="dropdown-item" href="#">Ayarlar</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a asp-controller="Login" asp-action="Logout" class="dropdown-item">Çıkış Yap</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="wrapper">
+        <aside id="sidebar" style="position: sticky; top: 0; z-index: 1000;">
+            <div class="d-flex">
+                <button class="toggle-btn" type="button">
+                    <img src="~/icons/DashboardSquare1.png" alt="Logo" class="lni-grid-alt" />
+                    <i class="lni lni-grid-alt"></i>
+                </button>
+                <div class="sidebar-logo">
+                    <a href="#">İÇ SÖZLEŞME SİSTEMİ</a>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
+                        <img src="~/icons/process.png" alt="Logo" class="lni-grid-alt" />
+                        <span>İç Sözleşme İşlemleri</span>
+                    </a>
+                    <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a asp-controller="Sozlesme" asp-action="GirisEkran" class="sidebar-link">Sözleşme Giriş Ekranı</a>
+                        </li>
+                    </ul>
+                </li>
+                @{
+                    var isAdmin = Context.Session.GetString("IsAdmin") == "True";
+                    int? userRole = Context.Session.GetInt32("UserRole");
+                }
+                <li class="sidebar-item">
+                    <a href="#contractRequests" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" aria-expanded="false" aria-controls="contractRequests">
+                        <img src="~/icons/images1.png" alt="Sözleşme İstekleri" style="width: 20px; height: 20px;" />
+                        <span>Sözleşme İstekleri</span>
+                    </a>
+                    <ul id="contractRequests" class="sidebar-dropdown list-unstyled collapse">
+                        @if (isAdmin)
+                        {
+                            <li class="sidebar-item">
+                                <a asp-controller="ContractRequest" asp-action="Create" class="sidebar-link">Yeni İstek Gönder</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a asp-controller="ContractRequest" asp-action="MySentRequests" class="sidebar-link">Sözleşme İstek Listesi</a>
+                            </li>
+                        }
+                        @if (userRole == 1)
+                        {
+                            <li class="sidebar-item">
+                                <a asp-controller="ContractRequest" asp-action="MyRequests" class="sidebar-link">Gelen İstekler</a>
+                            </li>
+
+                            <li class="sidebar-item">
+                                <a asp-controller="Sozlesme" asp-action="OnaylanacakSozlesmeler" class="sidebar-link">Onaylanacak Sözleşmeler</a>
+                            </li>
+                        }
+                        @if (userRole == 3)
+                        {
+                            <li class="sidebar-item">
+                                <a asp-controller="ContractRequest" asp-action="AssignedRequests" class="sidebar-link">Sözleşme Ekle</a>
+                            </li>
+
+                            <li class="sidebar-item">
+                                <a asp-controller="Sozlesme" asp-action="DuzenlememGerekenSozlesmeler" class="sidebar-link">Sözleşme Düzenle</a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#multi" aria-expanded="false" aria-controls="multi">
+                        <img src="~/icons/document.png" alt="Logo" class="lni-grid-alt" />
+                        <span>Belgeler</span>
+                    </a>
+                    <ul id="multi" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#multi-two-bekleyenler" aria-expanded="false" aria-controls="multi-two-bekleyenler">
+                                Bekleyenler
+                            </a>
+                            <ul id="multi-two-bekleyenler" class="sidebar-dropdown list-unstyled collapse">
+                                <li class="sidebar-item">
+                                    <a asp-controller="Status" asp-action="ImzaBekleyenler" class="sidebar-link">İmza Bekleyenler</a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a asp-controller="Status" asp-action="ParafBekleyenler" class="sidebar-link">Paraf Bekleyenler</a> <!-- 🌟 EKLENDİ -->
+                                </li>
+                               
+                            </ul>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#multi-two-islenenler" aria-expanded="false" aria-controls="multi-two-islenenler">
+                                İşlenenler
+                            </a>
+                            <ul id="multi-two-islenenler" class="sidebar-dropdown list-unstyled collapse">
+                                <li class="sidebar-item">
+                                    <a asp-controller="Status" asp-action="Imzalananlar" class="sidebar-link">İmzalananlar</a>
+                                </li>
+                                 <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link">Paraflananlar</a>
+                                </li> 
+                                 <li class="sidebar-item">
+                                    <a asp-controller="ContractStatus" asp-action="Cancelled" class="sidebar-link">İptal Edilenler</a>
+                                </li> 
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#karsibirim" aria-expanded="false" aria-controls="karsibirim">
+                        <img src="~/icons/workflow1.png" alt="Karşı Birim İşlemleri" class="lni-grid-alt" />
+                        <span>Karşı Birim İşlemleri</span>
+                    </a>
+                    <ul id="karsibirim" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        @if (userRole == 3)
+                        {
+                        <li class="sidebar-item">
+                            <a asp-controller="Status" asp-action="KarsidanGelenler" class="sidebar-link">Karşı Sözleşmeler</a>
+                        </li>
+                        }
+                        @if (userRole == 1)
+                        {
+                            <li class="sidebar-item">
+                                <a asp-controller="Status" asp-action="IncelemeBekleyenler" class="sidebar-link">İnceleme Bekleyenler</a>
+                            </li>
+
+                        }
+                        <li class="sidebar-item">
+                            <a asp-controller="Status" asp-action="KarsiReddet" class="sidebar-link">Onaylanmayanlar</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-item">
+                    <a asp-controller="Reminder" asp-action="Index" class="sidebar-link">
+                        <img src="~/icons/reminder.png" alt="Logo" class="lni-grid-alt" />
+                        <span>Hatırlatmalar</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <img src="~/icons/document.png" alt="Logo" class="lni-grid-alt" />
+                        <span>Raporlar Ve Yedeklemeler</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a asp-controller="Statistics" asp-action="CombinedChart" class="sidebar-link">
+                        <img src="~/icons/document.png" alt="Logo" class="lni-grid-alt" />
+                        <span>Sözleşme İstatistikleri</span>
+                    </a>
+                </li>
+
+
+                <!-- Alt Kısım Öğeleri -->
+
+            </ul>
+            <li class="sidebar-item">
+                <a asp-controller="Notification" asp-action="Index" class="sidebar-link">
+                    <img src="~/icons/notification.png" alt="Logo" class="lni-grid-alt" />
+
+
+                    @await Component.InvokeAsync("UnreadNotification")
+                    <span>Bildirimler</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link">
+                    <i class="lni lni-cog"></i>
+                    <span>Ayarlar</span>
+                </a>
+            </li>
+            <div class="sidebar-footer">
+                <a href="#" class="sidebar-link">
+                    <i class="lni lni-exit"></i>
+                    <span>Çıkış Yap</span>
+                </a>
+            </div>
+        </aside>
+
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+
+    <!-- Add anti-forgery form and JavaScript -->
+    <form asp-action="Index" method="post" id="antiForgeryForm" style="display: none;">
+        @Html.AntiForgeryToken()
+    </form>
+    <script>
+        function getAntiForgeryToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]').value;
+        }
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @*      <script src="~/js/site.js" asp-append-version="true"></script>
+    *@    @await RenderSectionAsync("Scripts", required: false)
+
+
+    <!-- boostrap js files-->
+    <script src="~/js/bootstrap.js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/lib/DataTables/datatables.min.js"></script>
+    @* <script src="~/js/bootstrap.bundle.min.js" asp-append-version="true"></script> *@
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/sweetalert2.min.js"></script>
+
+    <script src="~/lib/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="~/js/tinymce-custom.js"></script>
+
+    <script src="~/js/select2.min.js" asp-append-version="true"></script>
+</body>
+</html>

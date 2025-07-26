@@ -1,0 +1,10 @@
+﻿@model int
+
+
+@if (Model > 0)
+{
+    <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" style="font-size: 0.75rem;">
+        @Model
+        <span class="visually-hidden">okunmamış bildirim</span>
+    </span>
+}

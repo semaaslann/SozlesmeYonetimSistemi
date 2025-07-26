@@ -1,0 +1,128 @@
+﻿@model SozlesmeSistemi.Models.ContractRequest
+
+<section class="content">
+    <div class="row layout-top-spacing">
+        <div class="col-lg-12 layout-spacing">
+            <div class="widget-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Yeni Sözleşme İsteği Gönder</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Create" method="post">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="Title">Talep Başlığı <span class="text-danger">*</span></label>
+                                        <input asp-for="Title" class="form-control" placeholder="Sözleşme talebinin başlığı" />
+                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="EstimatedEndDate">Onaylanması Gereken Son Tarih <span class="text-danger">*</span></label>
+                                        <input asp-for="EstimatedEndDate" type="date" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                        <span asp-validation-for="EstimatedEndDate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="UnitId">Karşı Birim</label>
+                                        <select asp-for="UnitId" class="form-control" asp-items="ViewBag.Units" id="unitDropdown">
+                                            <option value="">-- Birim Seçiniz --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="RequestedToId">Grup Yöneticisi</label>
+                                        <select asp-for="RequestedToId" class="form-control" asp-items="ViewBag.Managers" id="managerDropdown">
+                                            <option value="">-- Yönetici Seçiniz --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group mb-3">
+                                        <label for="Content">Açıklama</label>
+                                        <textarea asp-for="Content" class="form-control" rows="3" placeholder="Kısa açıklama yazınız..."></textarea>
+                                        <span asp-validation-for="Content" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group mb-3">
+                                        <label for="Justification">Gerekçe</label>
+                                        <textarea asp-for="Justification" class="form-control" rows="3" placeholder="Neden bu sözleşmeye ihtiyaç duyuluyor?"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <button type="submit" class="btn btn-primary px-4 py-2">
+                                        <i class="fas fa-paper-plane"></i> İstek Gönder
+                                    </button>
+                                    <a href="@Url.Action("MySentRequests", "ContractRequest")" class="btn btn-secondary px-4 py-2 ms-2">
+                                        <i class="fas fa-arrow-left"></i> Geri Dön
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/contractRequest.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Form gönderildiğinde çalışacak kod
+            $('form').on('submit', function (e) {
+                e.preventDefault(); // Varsayılan form gönderimini durdur
+
+                // Formu AJAX ile gönder
+                $.ajax({
+                    url: $(this).attr('action'), // Formun action attribute'undan URL'yi al
+                    type: $(this).attr('method'), // Formun method attribute'undan (POST) al
+                    data: $(this).serialize(), // Form verilerini seri hale getir
+                    success: function (response) {
+                        // Başarılı gönderimde SweetAlert2 ile mesaj göster
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Başarılı!',
+                            text: 'İstek başarıyla gönderildi.',
+                            confirmButtonText: 'Tamam'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // İsteğe bağlı: Sayfayı yenile veya başka bir sayfaya yönlendir
+                                window.location.href = '/ContractRequest/MySentRequests'; // Ana sayfaya yönlendirme (isteğe bağlı)
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        // Hata durumunda SweetAlert2 ile hata mesajı göster
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hata!',
+                            text: 'İstek gönderilirken bir hata oluştu. Lütfen tekrar deneyin.',
+                            confirmButtonText: 'Tamam'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

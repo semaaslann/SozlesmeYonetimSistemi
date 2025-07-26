@@ -1,0 +1,108 @@
+﻿@model List<SozlesmeSistemi.Models.ContractRequest>
+
+@{
+    ViewData["Title"] = "AssignedRequests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+
+<section class="content">
+    <div class="row layout-top-spacing">
+        <div class="col-lg-12 layout-spacing">
+            <div class="widget-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Sözleşme Talepleri</h5>
+                    </div>
+                    <div class="card-body">
+                        <table id="contractTable" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Sıra No</th>
+                                    <th>Başlık</th>
+                                    <th>İçerik</th>
+
+                                    <th>Karşı Birim</th>
+                                    <th>Son Tarih</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    int rowNumber = 1;
+                                    foreach (var request in Model)
+                                    {
+                                        <tr>
+                                            <td>@rowNumber</td>
+                                            <td>@request.Title</td>
+                                            <td>@request.Content</td>
+
+                                            <td>@(request.Unit != null ? request.Unit.Name : "Birim Bulunamadı")</td>
+                                            <td>@request.EstimatedEndDate.ToShortDateString()</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#requestModal_@request.Id">
+                                                    Detay
+                                                </button>
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="requestModal_@request.Id" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Talep Detayı - @request.Title</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <dl class="row">
+                                                                    <dt class="col-sm-4">Başlık</dt>
+                                                                    <dd class="col-sm-8">@request.Title</dd>
+                                                                    <dt class="col-sm-4">Karşı Birim</dt>
+                                                                    <dd class="col-sm-8">@request.Unit.Name</dd> 
+                                                                    <dt class="col-sm-4">Açıklama</dt>
+                                                                    <dd class="col-sm-8">@request.Justification</dd>
+                                                                    <dt class="col-sm-4">Tahmini Bitiş Tarihi</dt>
+                                                                    <dd class="col-sm-8">@request.EstimatedEndDate.ToShortDateString()</dd>
+                                                               
+                                                                </dl>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                                                <!-- Form ile POST isteği -->
+                                                                <form asp-action="EklemeSayfasi" asp-controller="Sozlesme" method="post" style="display:inline;">
+                                                                    @Html.AntiForgeryToken()
+                                                                    <input type="hidden" name="contractRequestId" value="@request.Id" />
+                                                                    <button type="submit" class="btn btn-primary create-contract">Sözleşme Ekle</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        rowNumber++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center">Henüz sözleşme yok.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="~/js/tinymce-custom.js"></script>
+    <script src="~/lib/DataTables/datatables.min.js"></script>
+    <script src="~/js/datatablefiltre.js"></script>
+}

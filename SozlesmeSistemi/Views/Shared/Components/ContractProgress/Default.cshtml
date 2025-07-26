@@ -1,0 +1,19 @@
+﻿@model SozlesmeSistemi.Models.Contract
+
+<div class="progress-container">
+    <ul class="progressbar">
+        @{
+            var steps = new List<string>
+        {
+        "Taslak", "İnceleme Bekliyor", "İncelendi", "Paraf Bekliyor", "Paraflandı", "İmza Bekliyor", "İmzalandı", "Tamamlandı"
+        };
+            int currentStep = steps.IndexOf(Model.CurrentStatus ?? "Taslak");
+        }
+
+        @for (int i = 0; i < steps.Count; i++)
+        {
+            var activeClass = i <= currentStep ? "active" : "";
+            <li class="@activeClass">@steps[i]</li>
+        }
+    </ul>
+</div>

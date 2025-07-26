@@ -1,0 +1,57 @@
+﻿@model IEnumerable<SozlesmeSistemi.Models.Contract>
+@{
+    ViewData["Title"] = "İmzalanan Sözleşmeler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2>İmzalanan Sözleşmeler</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Başlık</th>
+                <th>Oluşturan</th>
+                <th>İmzalayanlar</th>
+                <th>Durum</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    var imzalayanlar = item.ContractSigners
+                    .Where(cs => cs.Role == "Imzalayan")
+                    .Select(cs => cs.User.Name)
+                    .ToList();
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.User?.Name</td>
+                        <td>@(imzalayanlar.Any() ? string.Join(", ", imzalayanlar) : "Yok")</td>
+                        <td>@item.CurrentStatus</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Detaylar</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">İmzalanmış sözleşme bulunmamaktadır.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

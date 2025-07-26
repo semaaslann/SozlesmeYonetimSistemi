@@ -1,0 +1,93 @@
+﻿@model List<SozlesmeSistemi.Models.Contract>
+
+@{
+    ViewData["Title"] = "Karşıdan Gelen Sözleşmeler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<section class='content'>
+    <div class='row layout-top-spacing'>
+        <div class='col-lg-12 layout-spacing'>
+            <div class='widget-content'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <h5 class='mb-0'>Karşıdan Gelen Sözleşmeler</h5>
+                    </div>
+
+                    <table class='table table-bordered table-striped' id='contractsTable'>
+                        <thead>
+                            <tr>
+                                <th>Başlık</th>
+                                <th>Sözleşme Konusu</th>
+                                <th>Sözleşme Türü</th>
+                                <th>Bitiş Tarihi</th>
+                                <th>Durum</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var contract in Model)
+                                {
+                                    <tr>
+                                        <td>@contract.Title</td>
+                                        <td>@contract.SozlesmeKonusu</td>
+                                        <td>@contract.SozlesmeTuru</td>
+                                        <td>@(contract.FinisDate?.ToString("dd/MM/yyyy") ?? "Belirtilmemiş")</td>
+                                        <td>@contract.CurrentStatus</td>
+                                        <td>
+                                            <a asp-controller='Sozlesme' asp-action='IncelemeSayfasi' asp-route-id='@contract.Id' class='btn btn-info btn-sm'>İncele</a>
+                                            @if (contract.CurrentStatus == "Karşı Birim Personel İnceliyor")
+                                            {
+                                                <a asp-controller='Sozlesme' asp-action='DuzenlemeSayfasi' asp-route-id='@contract.Id' class='btn btn-primary btn-sm'>Düzenle</a>
+                                            }
+                                            @if (contract.CurrentStatus == "Karşı Birim İnceleme Bekliyor")
+                                            {
+                                                <form asp-controller='Status' asp-action='Onayla' method='post' style='display:inline;'>
+                                                    <input type='hidden' name='contractId' value='@contract.Id' />
+                                                    <button type='submit' class='btn btn-success btn-sm'>Onayla</button>
+                                                </form>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan='6' class='text-center'>@ViewBag.Message</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src='~/lib/bootstrap/js/bootstrap.bundle.min.js'></script>
+    <script src='//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js'></script>
+    <script>
+        $(document).ready(function() {
+          // $('#contractsTable').DataTable({
+          //   language: {
+          //     url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json'
+          //   }
+          // });
+        });
+    </script>
+}

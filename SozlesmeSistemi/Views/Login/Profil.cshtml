@@ -1,0 +1,37 @@
+﻿@model SozlesmeSistemi.Models.User
+
+@{
+    ViewData["Title"] = "Profilim";
+}
+
+<h2>Profilim</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Ad Soyad</th>
+        <td>@Model.Name</td>
+    </tr>
+    <tr>
+        <th>Kullanıcı Adı</th>
+        <td>@Model.Username</td>
+    </tr>
+    <tr>
+        <th>E-posta</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>Aktif Mi?</th>
+        <td>@(Model.IsActive ? "Evet" : "Hayır")</td>
+    </tr>
+    <tr>
+        <th>Roller</th>
+        <td>
+            @foreach (var role in Model.UserRoles)
+            {
+                <span>@role.Role.Name</span>
+
+                <br />
+            }
+        </td>
+    </tr>
+</table>

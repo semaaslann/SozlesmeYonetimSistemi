@@ -1,0 +1,222 @@
+﻿@model SozlesmeSistemi.Models.Contract
+
+
+
+<div class="card mb-3">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-9">
+                <div role="menu" data-bs-toggle="collapse" aria-expanded="true" aria-controls="defaultAccordionOne">
+                    <h5>Onaylanmayan Sözleşme İnceleme</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <label><strong>Sözleşme Konusu:</strong></label>
+                <p>@Model.SozlesmeKonusu</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Sözleşme Adı:</strong></label>
+                <p>@Model.Title</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Sözleşme Türü:</strong></label>
+                <p>@Model.SozlesmeTuru</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Sözleşme Süresi:</strong></label>
+                <p>@Model.SozlesmeSuresi</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>İmza/Onay Tarihi:</strong></label>
+                <p>@(Model.ImzaOnayTarihi?.ToString("dd/MM/yyyy"))</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Bitiş Tarihi:</strong></label>
+                <p>@(Model.FinisDate?.ToString("dd/MM/yyyy"))</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Sözleşme Bedeli</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <label><strong>Sözleşme Tutarı:</strong></label>
+                <p>@Model.SozlesmeTutari</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Para Birimi:</strong></label>
+                <p>@Model.ParaBirimi</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Ödeme Vadeleri:</strong></label>
+                <p>@Model.OdemeVadeleri</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Sözleşme Taraf Bilgiler</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <label><strong>Tarafımız:</strong></label>
+                <p>@Model.OurUnit?.Name</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Karşı Taraf:</strong></label>
+                <p>@Model.CounterUnit?.Name</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Sözleşme Sorumluları</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <label><strong>Sorumlu Kişi:</strong></label>
+                <p>@Model.User?.Username</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>İmzalayan Kişiler:</strong></label>
+                <ul>
+                    @foreach (var signer in ViewBag.ImzalayanKisiler)
+                    {
+                        <li>@signer</li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Paraflayan Kişiler:</strong></label>
+                <ul>
+                    @foreach (var parapher in ViewBag.ParaflayanKisiler)
+                    {
+                        <li>@parapher</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Kontrol Listesi</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <label><strong>Fesih Durumu:</strong></label>
+                <p>@Model.FesihDurumu</p>
+            </div>
+            <div class="col-md-6">
+                <label><strong>Fesih Dış Çözel Şart:</strong></label>
+                <p>@Model.FesihDisCozelSart</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Ek Bilgiler</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <label><strong>Arşiv Klasör Numarası:</strong></label>
+                <p>@Model.ArsivKlasorNumarasi</p>
+            </div>
+            <div class="col-md-4">
+                <label><strong>İlgili İş Birimi:</strong></label>
+                <p>@Model.IlgiliIsBirimi</p>
+            </div>
+            <div class="col-md-4">
+                <label><strong>Büro - Kategori No:</strong></label>
+                <p>@Model.BuroKategoriNo</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Sözleşme İçeriği</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p>@Html.Raw(Model.Content)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Sözleşme Red Gerekçesi</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p>@Html.Raw(Model.RejectionReason)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 text-end">
+        <form asp-controller="Status" asp-action="Onayla" method="post" class="d-inline">
+            <input type="hidden" name="contractId" value="@Model.Id" />
+            <button type="submit" class="btn btn-success">Onayla</button>
+        </form>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">Reddet</button>
+    </div>
+</div>
+
+<!-- Red Gerekçesi Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Sözleşme Red Gerekçesi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-controller="Status" asp-action="KarsiReddet" method="post">
+                    <input type="hidden" name="contractId" value="@Model.Id" />
+                    <div class="form-group">
+                        <label for="rejectionReason">Red Gerekçesi</label>
+                        <textarea name="rejectionReason" class="form-control" required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-danger">Reddet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+}

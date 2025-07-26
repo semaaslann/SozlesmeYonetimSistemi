@@ -1,0 +1,184 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Sözleşme İstatistikleri";
+}
+
+<style>
+    .charts-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 20px; /* Space between charts */
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        margin: 20px auto;
+    }
+
+    .chart-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 650px; /* Slightly enlarged */
+        min-width: 300px; /* Ensure minimum width for responsiveness */
+    }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 350px !important; /* Slightly enlarged */
+        }
+
+    h2 {
+        font-size: 1.5rem;
+        color: #333;
+        text-align: center;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        color: #555;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .filter-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+</style>
+
+<h2>Sözleşme İstatistikleri (@Model.SelectedYear)</h2>
+
+<!-- Filtreleme: Yıl ve Kullanıcı -->
+<div class="filter-container">
+    <label for="yearSelect">Yıl Seçin:</label>
+    <select id="yearSelect" onchange="updateChart()">
+        @foreach (var year in Model.AvailableYears)
+        {
+            if (year == Model.SelectedYear)
+            {
+                <option value="@year" selected>@year</option>
+            }
+            else
+            {
+                <option value="@year">@year</option>
+            }
+        }
+    </select>
+</div>
+
+<!-- Charts Side by Side -->
+<div class="charts-wrapper">
+    <!-- 1. Sözleşme Durum Grafiği -->
+    <div class="chart-container">
+        <div class="section-title">Sözleşme Durumlarına Göre Dağılım</div>
+        <canvas id="contractStatusChart"></canvas>
+    </div>
+
+    <!-- 2. Sözleşme Bitiş Grafiği -->
+    <div class="chart-container">
+        <div class="section-title">Aylık Sözleşme Bitiş Sayıları</div>
+        <canvas id="contractFinishChart"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>
+        Chart.register(ChartDataLabels);
+
+        // 1. Sözleşme Durum Grafiği (Pasta)
+        var statusCtx = document.getElementById('contractStatusChart').getContext('2d');
+        var statusChart = new Chart(statusCtx, {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.StatusLabels)),
+                datasets: [{
+                    label: 'Sözleşme Sayısı',
+                    data: @Html.Raw(Json.Serialize(Model.StatusData)),
+                    backgroundColor: [
+                        'rgba(52, 152, 219, 0.8)',
+                        'rgba(46, 204, 113, 0.8)',
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(155, 89, 182, 0.8)',
+                        'rgba(241, 196, 15, 0.8)',
+                        'rgba(149, 165, 166, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(52, 152, 219, 1)',
+                        'rgba(46, 204, 113, 1)',
+                        'rgba(231, 76, 60, 1)',
+                        'rgba(155, 89, 182, 1)',
+                        'rgba(241, 196, 15, 1)',
+                        'rgba(149, 165, 166, 1)'
+                    ],
+                    borderWidth: 2,
+                    hoverOffset: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 12, weight: 'bold' }, color: '#333', padding: 15 } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.raw || 0;
+                                let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                let percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: { size: 12, weight: 'bold' },
+                        formatter: (value, context) => {
+                            let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            let percentage = ((value / total) * 100).toFixed(1);
+                            return `${percentage}%`;
+                        },
+                        anchor: 'center',
+                        align: 'center'
+                    }
+                },
+                animation: { duration: 1500, easing: 'easeOutQuart' }
+            }
+        });
+
+        // 2. Sözleşme Bitiş Grafiği (Sütun)
+        var finishCtx = document.getElementById('contractFinishChart').getContext('2d');
+        var finishChart = new Chart(finishCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.FinishLabels)),
+                datasets: [{
+                    label: 'Aylık Sözleşme Bitiş Sayısı',
+                    data: @Html.Raw(Json.Serialize(Model.FinishData)),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Bitiş Sayısı' } },
+                    x: { title: { display: true, text: 'Ay' } }
+                },
+                plugins: { legend: { display: true, position: 'top' } }
+            }
+        });
+
+    </script>
+}

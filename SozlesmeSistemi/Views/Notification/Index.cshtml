@@ -1,0 +1,78 @@
+﻿@model List<SozlesmeSistemi.Models.Notification>
+
+@{
+    ViewData["Title"] = "Bildirimlerim";
+}
+
+<h2 class="mt-4 mb-4">Bildirimlerim</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henüz bildirim yok.</div>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Sözleşme</th>
+                <th>Tarih</th>
+                <th>Gönderen</th>
+                <th>Alıcı</th>
+                <th>İşlem</th>
+                <th>Mesaj</th>
+                <th>*</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var rowClass = item.IsRead ? "bg-white" : "bg-info text-white";
+                <tr class="@rowClass">
+                    @*BEN EKLEDİM BAŞLANGIÇ*@
+                    <td>
+                        @{
+                            string baslik = "";
+
+                            if (!string.IsNullOrEmpty(item.Message) && item.Message.ToLower().Contains("talebi"))
+                            {
+                                // Talep bildirimi ise mesajdan başlık çıkar
+                                var parcala = item.Message.Split('\'');
+                                if (parcala.Length > 1)
+                                {
+                                    baslik = parcala[1];
+                                }
+                                else
+                                {
+                                    baslik = "Başlık bulunamadı";
+                                }
+                            }
+                            else
+                            {
+                                // Diğer tüm bildirimler için sözleşme başlığı göster
+                                baslik = item.Contract?.Title ?? "Sözleşme bulunamadı";
+                            }
+                        }
+                        @baslik
+                    </td>
+
+                    @*BEN EKLEDİM BİTİŞ*@
+                    @*<td>@item.Contract.Title</td> *@
+                    <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@item.Sender?.Username </td>
+                    <td>@item.Receiver?.Username </td>
+                    <td>@item.ActionType</td>
+                    <td>@item.Message</td>
+                    <td>
+                        <form asp-action="Delete" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bildirim silinsin mi?');">Sil</button>
+                        </form>
+                        @*<a asp-action="ViewContract" asp-route-contractId="@item.ContractId" asp-route-notificationId="@item.Id" class="btn btn-sm btn-primary ms-2">İncele</a>*@
+                        <a href="@Url.Action("Details", "Status", new { id = item.ContractId })" class="btn btn-sm btn-primary ms-2">İncele</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

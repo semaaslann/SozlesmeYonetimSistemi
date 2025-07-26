@@ -1,0 +1,72 @@
+﻿@model IEnumerable<SozlesmeSistemi.Models.Contract>
+@{
+    ViewData["Title"] = "Paraf Bekleyen Sözleşmeler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2>Paraf Bekleyen Sözleşmeler</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Başlık</th>
+                <th>Oluşturan</th>
+                <th>Paraflayanlar</th>
+                <th>Sıradaki Paraflayan</th>
+                <th>Paraf Durumu</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    var parafStatus = ViewBag.ParafStatuses[item.Id];
+                    var paraflayanlar = item.ContractSigners
+                    .Where(cs => cs.Role == "Paraflayan")
+                    .Select(cs => cs.User.Name)
+                    .ToList();
+                    var nextParaf = item.ContractParafs
+                    .Where(p => !p.IsParaflandi)
+                    .OrderBy(p => p.Sira)
+                    .FirstOrDefault();
+                    var nextParaflayanName = nextParaf != null ? nextParaf.ParaflayanUser?.Name : "Tüm paraflar tamamlandı";
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.User?.Name</td>
+                        <td>@(paraflayanlar.Any() ? string.Join(", ", paraflayanlar) : "Yok")</td>
+                        <td>@nextParaflayanName</td>
+                        <td>@(parafStatus ? "Paraflandı" : "Bekliyor")</td>
+                        <td>
+                            @if (!parafStatus && nextParaf?.ParaflayanUserId == ViewBag.CurrentUserId)
+                            {
+                                <a asp-action="Parafla" asp-route-contractId="@item.Id" class="btn btn-primary">Parafla</a>
+                            }
+                            else
+                            {
+                                <span>@(parafStatus ? "Zaten paraflandı" : "Sıra sizde değil")</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">Paraf bekleyen sözleşme bulunmamaktadır.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

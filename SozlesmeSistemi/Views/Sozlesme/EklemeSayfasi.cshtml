@@ -1,0 +1,371 @@
+﻿@model SozlesmeSistemi.Models.Contract
+
+@{
+    ViewData["Title"] = "EklemeSayfasi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row layout-top-spacing">
+        <div class="col-lg-12 layout-spacing">
+            <div class="widget-content">
+                <div id="toggleAccordion" class="accordion">
+                    <div class="card">
+                        <!-- Accordion Başlığı -->
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div role="menu" data-bs-toggle="collapse" aria-expanded="true" aria-controls="defaultAccordionOne">
+                                        <h5>Sözleşme Ekle</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion İçeriği -->
+                        <div id="defaultAccordionOne" class="collapse show" aria-labelledby="headingOne1" data-bs-parent="#toggleAccordion">
+                            <div class="card-body">
+                                <div class="col-xl-12 col-lg-12 col-md-12 layout-spacing">
+                                    <!-- Mesajlar -->
+                                    @if (TempData["SuccessMessage"] != null)
+                                    {
+                                        <div class="alert alert-success">
+                                            @TempData["SuccessMessage"]
+                                        </div>
+                                    }
+                                    @if (!ViewData.ModelState.IsValid)
+                                    {
+@*                                         <div class="alert alert-danger">
+ *@                                            <ul>
+                                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                                {
+@*                                                     <li>@error.ErrorMessage</li>
+ *@                                                }
+                                            </ul>
+@*                                         </div>
+ *@                                    }
+                                    <!-- Form -->
+                                    <form id="frmContract" asp-action="EklemeSayfasi" method="post">
+                                        <div class="form">
+                                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                            <input type="hidden" asp-for="ContractRequestId" />
+
+                                            <!-- Sözleşme Genel Bilgiler -->
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <h5>Sözleşme Genel Bilgiler</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="SozlesmeKonusu" class="control-label">Sözleşme Konusu</label>
+                                                                <input asp-for="SozlesmeKonusu" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="Title" class="control-label">Sözleşme Adı</label>
+                                                                <input asp-for="Title" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="SozlesmeTuru" class="control-label">Sözleşme Türü</label>
+                                                                <input asp-for="SozlesmeTuru" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="SozlesmeSuresi" class="control-label">Sözleşme Süresi (Gün)</label>
+                                                                <input asp-for="SozlesmeSuresi" class="form-control" readonly />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="ImzaOnayTarihi" class="control-label">İmza/Onay Tarihi</label>
+                                                                <input asp-for="ImzaOnayTarihi" class="form-control" type="date" required min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="FinisDate" class="control-label">Sözleşme Bitiş Tarihi</label>
+                                                                <input asp-for="FinisDate" class="form-control" type="date" required min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Sözleşme Bedeli -->
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <h5>Sözleşme Bedeli</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="SozlesmeTutari" class="control-label">Sözleşme Tutarı</label>
+                                                                <input asp-for="SozlesmeTutari" class="form-control" type="number" step="0.01" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="ParaBirimi" class="control-label">Para Birimi</label>
+                                                                <input asp-for="ParaBirimi" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="OdemeVadeleri" class="control-label">Ödeme Vadeleri</label>
+                                                                <input asp-for="OdemeVadeleri" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Sözleşme Taraf Bilgiler -->
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <h5>Sözleşme Taraf Bilgiler</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="OurUnitId" class="control-label">Tarafımız</label>
+                                                                <input type="text" class="form-control" value="@ViewBag.CurrentUnitName" readonly />
+                                                                <input type="hidden" asp-for="OurUnitId" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="CounterUnitId" class="control-label">Karşı Taraf</label>
+                                                                <select asp-for="CounterUnitId" class="form-control select2" required asp-items="@(new SelectList(ViewBag.Units, "Value", "Text"))">
+                                                                    <option value="">Seçiniz</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Sözleşme Sorumluları -->
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <h5>Sözleşme Sorumluları</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="UserId" class="control-label">Sorumlu Kişi</label>
+                                                                <input type="text" class="form-control" value="@ViewBag.CurrentUserName" readonly />
+                                                                <input type="hidden" asp-for="UserId" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label">İmzalayan Kişiler</label>
+                                                                <select name="ImzalayanKisiIds" class="form-control select2" multiple required>
+                                                                    @foreach (var user in ViewBag.ImzalayanKisiler)
+                                                                    {
+                                                                        <option value="@user.Value">@user.Text</option>
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label">Paraflayan Kişiler</label>
+                                                                <select name="ParaflayanKisiIds" id="paraflayanKisiler" class="form-control select2" multiple required>
+                                                                    @foreach (var user in ViewBag.ParaflayanKisiler)
+                                                                    {
+                                                                        <option value="@user.Value">@user.Text</option>
+                                                                    }
+                                                                </select>
+                                                                <small class="form-text text-muted">Paraflayanların sırasını belirlemek için seçenekleri sürükleyip bırakabilirsiniz.</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Kontrol Listesi -->
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <h5>Kontrol Listesi</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="FesihDurumu" class="control-label">Fesih Durumu</label>
+                                                                <input asp-for="FesihDurumu" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label asp-for="FesihDisCozelSart" class="control-label">Fesih Dış Çözel Şart</label>
+                                                                <input asp-for="FesihDisCozelSart" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Ek Bilgiler -->
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <h5>Ek Bilgiler</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label asp-for="ArsivKlasorNumarasi" class="control-label">Arşiv Klasör Numarası</label>
+                                                                <input asp-for="ArsivKlasorNumarasi" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label asp-for="IlgiliIsBirimi" class="control-label">İlgili İş Birimi</label>
+                                                                <input asp-for="IlgiliIsBirimi" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label asp-for="BuroKategoriNo" class="control-label">Büro - Kategori No</label>
+                                                                <input asp-for="BuroKategoriNo" class="form-control" required />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <h5>Sözleşme İçeriği</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group tinymce-container">
+                                                                <textarea id="contractContent" asp-for="Content" class="form-control" required></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Butonlar -->
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="form-group text-end">
+                                                        <a asp-action="GirisEkran" class="btn btn-secondary">İptal</a>
+                                                        <button type="submit" class="btn btn-success">Gönder</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <link href="~/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/tinymce-custom.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/select2.min.js"></script>
+    <script src="~/lib/tinymce/js/tinymce/tinymce.min.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/js/Contract.js"></script>
+    <script>
+        $(document).ready(function () {
+
+
+
+            $("#paraflayanKisiler").select2({
+                placeholder: "Paraflayanları seçin",
+                allowClear: true,
+                sortable: true // Sıralama desteği
+            });
+            // Tarih alanlarına bugünün tarihini varsayılan olarak ayarla
+            $('input[type="date"]').val(new Date().toISOString().split('T')[0]);
+
+            // Form alanlarını kontrol et
+            function checkFormValidity() {
+                var isValid = true;
+                $('[required]').each(function () {
+                    if (!$(this).val()) {
+                        isValid = false;
+                        return false; // Döngüyü erken sonlandır
+                    }
+                });
+                //$('button[value="Save"]').prop('disabled', !isValid);
+                $('button[value="SaveDraft"]').prop('disabled', false); // Taslak her zaman aktif
+            }
+
+            $('input, select, textarea').on('change keyup', checkFormValidity);
+
+            // Butonlara tıklama olaylarını bağla
+            $('button[type="submit"]').on('click', function (e) {
+                var action = $(this).val();
+                var form = $('#frmContract');
+
+                if (action === 'SaveDraft') {
+                    console.log('SaveDraft clicked, disabling validation');
+                    form[0].noValidate = true; // HTML5 doğrulamasını devre dışı bırak
+                    $('[required]').removeAttr('required').removeAttr('aria-invalid');
+                    $('[required]').removeClass('input-validation-error');
+                    form.data('validator').settings.ignore = '*';
+                    form.validate().resetForm();
+                } else if (action === 'Save') {
+                    console.log('Save clicked, enabling validation');
+                    if (!form.valid()) {
+                        e.preventDefault();
+                        alert('Zorunlu alanları doldurmalısınız!');
+                        return;
+                    }
+                }
+            });
+
+            // Form gönderimi için ek koruma
+            $('#frmContract').submit(function (e) {
+                var action = $('button[type="submit"]:focus').val() || $('button[type="submit"]:last').val();
+                if (action === 'SaveDraft') {
+                    console.log('Form submit for Draft, validation should be disabled');
+                } else if (action === 'Save' && !$(this).valid()) {
+                    e.preventDefault();
+                    alert('Zorunlu alanları doldurmalısınız!');
+                }
+                tinymce.triggerSave(); // TinyMCE içeriğini textarea'ya yaz
+            });
+
+            // İlk yüklemede doğrulama çalışsın
+            checkFormValidity();
+
+            // TinyMCE başlat (eğer fonksiyon tanımlıysa)
+            if (typeof initTinyMCE === 'function') {
+                initTinyMCE('contractContent');
+            } else {
+                console.error('initTinyMCE function is not defined');
+            }
+        });
+    </script>
+   
+}

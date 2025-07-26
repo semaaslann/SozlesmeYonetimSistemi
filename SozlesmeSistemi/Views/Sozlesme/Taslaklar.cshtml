@@ -1,0 +1,42 @@
+﻿@model IEnumerable<SozlesmeSistemi.Models.Contract>
+
+@{
+    ViewData["Title"] = "Taslak Sözleşmeler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Taslak Sözleşmeler</h2>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sözleşme Adı</th>
+                <th>Konu</th>
+                <th>Oluşturma Tarihi</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var contract in Model)
+            {
+                <tr>
+                    <td>@contract.Title</td>
+                    <td>@contract.SozlesmeKonusu</td>
+                    <td>@contract.CreatedDate.ToShortDateString()</td>
+                    <td>
+                        <a asp-action="EklemeSayfasi" asp-route-id="@contract.Id" class="btn btn-primary btn-sm">Düzenle</a>
+                        <a asp-action="SilOnay" asp-route-id="@contract.Id" class="btn btn-danger btn-sm" onclick="return confirm('Bu taslağı silmek istediğinize emin misiniz?')">Sil</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Henüz taslak sözleşme bulunmamaktadır.</p>
+}
+
+<a asp-action="EklemeSayfasi" class="btn btn-success">Yeni Sözleşme Oluştur</a>

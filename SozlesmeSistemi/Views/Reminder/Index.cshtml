@@ -1,0 +1,64 @@
+﻿@model List<SozlesmeSistemi.Models.Reminder>
+
+@{
+    ViewData["Title"] = "Yaklaşan Hatırlatmalar";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">@ViewData["Title"]</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Sözleşme Başlığı</th>
+                        <th scope="col">Açıklama</th>
+                        <th scope="col">Hatırlatma Türü</th>
+                        <th scope="col">Hatırlatma Tarihi</th>
+                        <th scope="col">Kalan Süre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var reminder = Model[i];
+                        var typeLabel = "";
+                        var rowClass = reminder.IsNew ? "table-primary" : ""; // Yeni ise mavi arka plan
+
+                        if (reminder.Description.Contains("İmza"))
+                        {
+                            typeLabel = "<span class='badge bg-info'>İmza Onay</span>";
+                        }
+                        else if (reminder.Description.Contains("Bitiş"))
+                        {
+                            typeLabel = "<span class='badge bg-warning text-dark'>Bitiş</span>";
+                        }
+
+                        var remainingDays = (reminder.DueDate.Date - DateTime.Today).Days;
+                        var remainingText = remainingDays >= 0
+                        ? $"<span class='text-success'>{remainingDays} gün kaldı</span>"
+                        : $"<span class='text-danger'>{-remainingDays} gün geçti</span>";
+
+                        <tr class="@rowClass" onclick="location.href='@Url.Action("MarkAsSeen", "Reminder", new { id = reminder.Id })'" style="cursor:pointer;">
+                            <th scope="row">@(@i + 1)</th>
+                            <td>@reminder.Title</td>
+                            <td>@reminder.Description</td>
+                            <td>@Html.Raw(typeLabel)</td>
+                            <td>@reminder.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>@Html.Raw(remainingText)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Yaklaşan bir hatırlatma bulunmamaktadır.
+        </div>
+    }
+</div>

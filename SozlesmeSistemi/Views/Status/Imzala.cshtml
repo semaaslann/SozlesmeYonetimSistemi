@@ -1,0 +1,110 @@
+﻿@model SozlesmeSistemi.Models.Contract
+
+@{
+    ViewData["Title"] = "Sözleşmeyi İmzala";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Sözleşmeyi İmzala</h2>
+
+<p><strong>Sözleşme Adı:</strong> @Model.Title</p>
+<p><strong>Konusu:</strong> @Model.SozlesmeKonusu</p>
+<p><strong>İmzalayanlar:</strong> @string.Join(", ", ViewBag.ImzalayanKisiler)</p>
+
+<div class="signature-container">
+    <canvas id="signatureCanvas" width="400" height="200" style="border: 1px solid #000;"></canvas>
+    <button id="clearSignature" class="btn btn-secondary mt-2">Temizle</button>
+    <button id="saveSignature" class="btn btn-primary mt-2">Kaydet</button>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // Set up canvas
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+
+        // Mouse and touch events for drawing
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing, { passive: true });
+        canvas.addEventListener('touchmove', draw, { passive: true });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function startDrawing(e) {
+            isDrawing = true;
+            [x, y] = getCoordinates(e);
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            [x, y] = getCoordinates(e);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.closePath();
+        }
+
+        function getCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            if (e.type.includes('touch')) {
+                return [e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top];
+            }
+            return [e.clientX - rect.left, e.clientY - rect.top];
+        }
+
+        document.getElementById('clearSignature').addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        document.getElementById('saveSignature').addEventListener('click', () => {
+            const dataURL = canvas.toDataURL('image/png');
+            const base64String = dataURL.split(',')[1]; // Remove data URL prefix
+            if (!base64String) {
+                alert('Lütfen bir imza çizin!');
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = '@Url.Action("SaveSignature", "Status")';
+
+            const contractIdInput = document.createElement('input');
+            contractIdInput.name = 'contractId';
+            contractIdInput.value = '@ViewBag.ContractId';
+            form.appendChild(contractIdInput);
+
+            const userIdInput = document.createElement('input');
+            userIdInput.name = 'userId';
+            userIdInput.value = '@ViewBag.CurrentUserId';
+            form.appendChild(userIdInput);
+
+            const signatureInput = document.createElement('input');
+            signatureInput.name = 'signatureBase64';
+            signatureInput.value = base64String;
+            form.appendChild(signatureInput);
+
+            const tokenInput = document.createElement('input');
+            tokenInput.name = '__RequestVerificationToken';
+            tokenInput.value = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            form.appendChild(tokenInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        });
+    </script>
+}
