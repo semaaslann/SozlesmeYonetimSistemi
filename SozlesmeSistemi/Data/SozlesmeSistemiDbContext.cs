@@ -36,7 +36,7 @@ namespace SozlesmeSistemi.Data
         public DbSet<ContractParaf> ContractParafs { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=EBRU\\SQLEXPRESS;Database=SozlesmeSistemiDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Server=LAPTOP-4802G7MU\\SQLEXPRESS;Database=SozlesmeSistemiDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
