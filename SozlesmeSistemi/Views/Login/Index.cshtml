@@ -2,26 +2,140 @@
 @{
     Layout = "~/Views/Shared/_LoginLayout.cshtml";
 }
-
 @{
     ViewData["Title"] = "Giriş Yap";
 }
 
 
+    <div class="login-card">
+        <h2>Giriş Yap</h2>
+        <p class="subtitle">Hesabınıza erişim sağlayın</p>
+        
+        <form asp-controller="Login" asp-action="Index" method="post">
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" name="username" class="form-control" required placeholder="Kullanıcı adınızı girin" />
+            </div>
+            <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" name="password" class="form-control" required placeholder="Şifrenizi girin" />
+            </div>
+            <button type="submit" class="btn btn-primary">Giriş Yap</button>
+        </form>
 
-<form asp-controller="Login" asp-action="Index" method="post">
-    <div class="form-group">
-        <label>Kullanıcı Adı</label>
-        <input type="text" name="username" class="form-control" required />
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger mt-2">@ViewBag.Error</div>
+        }
     </div>
-    <div class="form-group">
-        <label>Şifre</label>
-        <input type="password" name="password" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-primary">Giriş</button>
-</form>
 
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger mt-2">@ViewBag.Error</div>
+
+<style>
+body {
+    background: #f5f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #e9ecef;
+}
+
+.login-card h2 {
+    text-align: center;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.subtitle {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #495057;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #007bff;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #007bff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.mt-2 {
+    margin-top: 20px;
+}
+
+/* Responsive */
+media (max-width: 480px) {
+    .login-card {
+        padding: 30px 25px;
+        margin: 10px;
+    }
+}
+</style>
