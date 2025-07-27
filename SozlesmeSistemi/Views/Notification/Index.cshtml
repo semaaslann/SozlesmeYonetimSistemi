@@ -1,406 +1,78 @@
 ﻿@model List<SozlesmeSistemi.Models.Notification>
+
 @{
     ViewData["Title"] = "Bildirimlerim";
 }
 
-<div class="notifications-page">
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="container-fluid px-4 py-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h2 class="mb-1 fw-bold">Bildirimlerim</h2>
-                    <p class="text-muted mb-0">Toplam @Model.Count() bildirim bulundu</p>
-                </div>
-                
-                @if (Model.Any(x => !x.IsRead))
-                {
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="badge bg-danger fs-6 px-3 py-2">@Model.Count(x => !x.IsRead) Okunmamış</span>
-                        <button type="button" class="btn btn-primary">
-                            <i class="fas fa-check-double me-2"></i>
-                            Tümünü Okundu İşaretle
-                        </button>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
+<h2 class="mt-4 mb-4">Bildirimlerim</h2>
 
-    <!-- Notifications Content -->
-    <div class="notifications-content">
-        <div class="container-fluid px-4">
-            @if (!Model.Any())
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henüz bildirim yok.</div>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Sözleşme</th>
+                <th>Tarih</th>
+                <th>Gönderen</th>
+                <th>Alıcı</th>
+                <th>İşlem</th>
+                <th>Mesaj</th>
+                <th>*</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
             {
-                <!-- Empty State -->
-                <div class="empty-state text-center py-5">
-                    <div class="empty-icon text-muted mb-3" style="font-size: 3rem;">
-                        <i class="fas fa-bell-slash"></i>
-                    </div>
-                    <h5 class="text-muted">Henüz bildirim yok</h5>
-                    <p class="text-muted">Yeni bildirimler geldiğinde burada görünecek.</p>
-                </div>
-            }
-            else
-            {
-                <!-- Notifications List -->
-                <div class="notifications-list">
-                    @foreach (var item in Model.OrderByDescending(x => x.CreatedDate))
-                    {
-                        var isUnread = !item.IsRead;
-                        
-                        // Başlık hesaplama
-                        string baslik = "";
-                        if (!string.IsNullOrEmpty(item.Message) && item.Message.ToLower().Contains("talebi"))
-                        {
-                            var parcala = item.Message.Split('\'');
-                            if (parcala.Length > 1)
+                var rowClass = item.IsRead ? "bg-white" : "bg-info text-white";
+                <tr class="@rowClass">
+                    @*BEN EKLEDİM BAŞLANGIÇ*@
+                    <td>
+                        @{
+                            string baslik = "";
+
+                            if (!string.IsNullOrEmpty(item.Message) && item.Message.ToLower().Contains("talebi"))
                             {
-                                baslik = parcala[1];
+                                // Talep bildirimi ise mesajdan başlık çıkar
+                                var parcala = item.Message.Split('\'');
+                                if (parcala.Length > 1)
+                                {
+                                    baslik = parcala[1];
+                                }
+                                else
+                                {
+                                    baslik = "Başlık bulunamadı";
+                                }
                             }
                             else
                             {
-                                baslik = "Başlık bulunamadı";
+                                // Diğer tüm bildirimler için sözleşme başlığı göster
+                                baslik = item.Contract?.Title ?? "Sözleşme bulunamadı";
                             }
                         }
-                        else
-                        {
-                            baslik = item.Contract?.Title ?? "Sözleşme bulunamadı";
-                        }
+                        @baslik
+                    </td>
 
-                        <div class="notification-item @(isUnread ? "unread" : "")">
-                            <div class="notification-icon @GetNotificationTypeClass(item.ActionType)">
-                                <i class="@GetNotificationIcon(item.ActionType)"></i>
-                            </div>
-                            
-                            <div class="notification-content">
-                                <div class="notification-header">
-                                    <h6 class="notification-title mb-1">@baslik</h6>
-                                    <div class="notification-meta">
-                                        <span class="badge @GetActionTypeBadgeClass(item.ActionType) me-2">@item.ActionType</span>
-                                        <small class="text-muted">@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</small>
-                                    </div>
-                                </div>
-                                
-                                <p class="notification-message mb-2">@item.Message</p>
-                                
-                                <div class="notification-users">
-                                    <small class="text-muted">
-                                        <i class="fas fa-user me-1"></i>@item.Sender?.Username
-                                        <i class="fas fa-arrow-right mx-2"></i>
-                                        @item.Receiver?.Username
-                                    </small>
-                                </div>
-                            </div>
-                            
-                            <div class="notification-actions">
-                                <a href="@Url.Action("Details", "Status", new { id = item.ContractId })" 
-                                   class="btn btn-sm btn-primary me-2">
-                                    <i class="fas fa-eye me-1"></i>İncele
-                                </a>
-                                
-                                <form asp-action="Delete" method="post" style="display:inline;" class="delete-form">
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                            
-                            @if (isUnread)
-                            {
-                                <div class="unread-indicator"></div>
-                            }
-                        </div>
-                    }
-                </div>
+                    @*BEN EKLEDİM BİTİŞ*@
+                    @*<td>@item.Contract.Title</td> *@
+                    <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@item.Sender?.Username </td>
+                    <td>@item.Receiver?.Username </td>
+                    <td>@item.ActionType</td>
+                    <td>@item.Message</td>
+                    <td>
+                        <form asp-action="Delete" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bildirim silinsin mi?');">Sil</button>
+                        </form>
+                        @*<a asp-action="ViewContract" asp-route-contractId="@item.ContractId" asp-route-notificationId="@item.Id" class="btn btn-sm btn-primary ms-2">İncele</a>*@
+                        <a href="@Url.Action("Details", "Status", new { id = item.ContractId })" class="btn btn-sm btn-primary ms-2">İncele</a>
+                    </td>
+                </tr>
             }
-        </div>
-    </div>
-</div>
-
-<style>
-:root {
-    --primary-color: #007bff;
-    --success-color: #28a745;
-    --warning-color: #ffc107;
-    --danger-color: #dc3545;
-    --info-color: #17a2b8;
-    --light-bg: #f8f9fa;
-    --border-color: #e9ecef;
-    --text-muted: #6c757d;
-}
-
-.notifications-page {
-    background-color: var(--light-bg);
-    min-height: 100vh;
-}
-
-.page-header {
-    background: white;
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.notifications-content {
-    padding: 2rem 0;
-}
-
-.notifications-list {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.notification-item {
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.notification-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-color: var(--primary-color);
-}
-
-.notification-item.unread {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
-    border-left: 4px solid var(--primary-color);
-}
-
-.notification-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 16px;
-    flex-shrink: 0;
-}
-
-.notification-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.notification-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-}
-
-.notification-title {
-    font-weight: 600;
-    color: #2c3e50;
-    margin: 0;
-}
-
-.notification-meta {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.notification-message {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    line-height: 1.4;
-    margin: 0;
-}
-
-.notification-users {
-    font-size: 0.8rem;
-}
-
-.notification-actions {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.unread-indicator {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 8px;
-    height: 8px;
-    background: var(--danger-color);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-}
-
-.badge {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.btn {
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-.empty-state {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-/* Icon Classes */
-.type-info { 
-    background: linear-gradient(135deg, var(--info-color), #138496); 
-}
-.type-success { 
-    background: linear-gradient(135deg, var(--success-color), #1e7e34); 
-}
-.type-warning { 
-    background: linear-gradient(135deg, var(--warning-color), #e0a800); 
-}
-.type-danger { 
-    background: linear-gradient(135deg, var(--danger-color), #c82333); 
-}
-
-/* Badge Classes */
-.badge-action-info { 
-    background-color: var(--info-color); 
-    color: white; 
-}
-.badge-action-success { 
-    background-color: var(--success-color); 
-    color: white; 
-}
-.badge-action-warning { 
-    background-color: var(--warning-color); 
-    color: #212529; 
-}
-.badge-action-danger { 
-    background-color: var(--danger-color); 
-    color: white; 
-}
-
-/* Animations */
-keyframes pulse {
-    0%, 100% { 
-        opacity: 1; 
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 0.5; 
-        transform: scale(1.1);
-    }
-}
-
-/* Responsive Design */
-media (max-width: 768px) {
-    .notification-item {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    
-    .notification-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-    
-    .notification-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .page-header .d-flex {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start !important;
-    }
-    
-    .notifications-content {
-        padding: 1rem 0;
-    }
-}
-
-media (max-width: 576px) {
-    .notification-item {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    .notification-actions {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .notification-actions .btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Delete confirmation
-    document.querySelectorAll('.delete-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            if (!confirm('Bu bildirimi silmek istediğinizden emin misiniz?')) {
-                e.preventDefault();
-            }
-        });
-    });
-});
-</script>
-
-@functions {
-    string GetNotificationIcon(string actionType)
-    {
-        return actionType?.ToLower() switch
-        {
-            "talep reddedildi" => "fas fa-times-circle",
-            "talep onaylandı" => "fas fa-check-circle", 
-            "yeni talep" => "fas fa-plus-circle",
-            "güncelleme" => "fas fa-edit",
-            _ => "fas fa-info-circle"
-        };
-    }
-
-    string GetNotificationTypeClass(string actionType)
-    {
-        return actionType?.ToLower() switch
-        {
-            "talep reddedildi" => "type-danger",
-            "talep onaylandı" => "type-success",
-            "yeni talep" => "type-info",
-            "güncelleme" => "type-warning",
-            _ => "type-info"
-        };
-    }
-
-    string GetActionTypeBadgeClass(string actionType)
-    {
-        return actionType?.ToLower() switch
-        {
-            "talep reddedildi" => "badge-action-danger",
-            "talep onaylandı" => "badge-action-success",
-            "yeni talep" => "badge-action-info",
-            "güncelleme" => "badge-action-warning",
-            _ => "badge-action-info"
-        };
-    }
+        </tbody>
+    </table>
 }

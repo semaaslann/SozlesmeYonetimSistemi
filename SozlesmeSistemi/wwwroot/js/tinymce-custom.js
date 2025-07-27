@@ -53,4 +53,3 @@ document.getElementById('fileUpload').addEventListener('change', function (e) {
     //});
     //});
 }
-

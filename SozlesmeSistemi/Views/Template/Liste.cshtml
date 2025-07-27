@@ -1,0 +1,46 @@
+﻿@model IEnumerable<SozlesmeSistemi.Models.Template>
+
+@{
+    ViewData["Title"] = "Ek Belgeler Listesi";
+}
+
+<h2 class="mb-3">Ek Belgeler</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>#</th>
+            <th>Adı</th>
+            <th>Oluşturulma Tarihi</th>
+            <th>İçerik</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            int i = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(i++)</td>
+                    <td>@item.Name</td>
+                    <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                    
+                    <td>
+                        <a href="@Url.Action("Duzenle", "Template", new { id = item.Id })" class="btn btn-sm btn-info">
+                            Düzenle
+                        </a>
+                    </td>
+                    
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">Kayıtlı ek belge bulunmamaktadır.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

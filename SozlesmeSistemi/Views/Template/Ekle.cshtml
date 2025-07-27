@@ -1,0 +1,58 @@
+﻿@model SozlesmeSistemi.Models.Template
+@{
+    ViewData["Title"] = "Ek Belge Oluştur";
+}
+
+<div class="container mt-3">
+    <h3 class="fw-bold mb-3"><i class="fas fa-plus-circle"></i> Ek Belge Oluştur</h3>
+    <div class="card p-3 shadow-sm" style="background-color: #f8f9fa;">
+        <form asp-action="Ekle" method="post">
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="form-label text-dark fw-medium">Ek Belge Adı <span class="text-danger">*</span></label>
+                <input asp-for="Name" class="form-control form-control-sm border-primary" required placeholder="Örnek: Gizlilik Ek Belgesi" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Content" class="form-label text-dark fw-medium">Şablon İçeriği <span class="text-danger">*</span></label>
+                <textarea asp-for="Content" class="form-control tinymce-editor" rows="6" required></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Kaydet</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/your-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        $(document).ready(function () {
+            tinymce.init({
+                selector: '.tinymce-editor',
+                height: 250, // Editör yüksekliğini küçülttük
+                menubar: false, // Menü çubuğunu kaldırdık
+                plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste help wordcount',
+                toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code', // Araç çubuğunu sadeleştirdik
+                statusbar: true,
+                content_style: 'body { font-family: Arial, sans-serif; font-size: 12px; }', // Font boyutunu küçülttük
+                setup: function (editor) {
+                    editor.on('init', function () {
+                        editor.getContainer().style.maxHeight = '300px';
+                        editor.getContainer().style.overflowY = 'auto';
+                    });
+                }
+            });
+
+            // Form doğrulama
+            $('form').submit(function (e) {
+                tinymce.triggerSave();
+                if (!$(this).valid()) {
+                    e.preventDefault();
+                    alert('Lütfen tüm zorunlu alanları doldurun!');
+                }
+            });
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

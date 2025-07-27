@@ -736,3 +736,6 @@ table.dataTable thead th.sorting_desc:after {
     flex: 1; /* Esnek genişlik, kalan alanı doldurur */
     margin-right: 10px; /* Butonla arasında boşluk */
 }
+
+
+

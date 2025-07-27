@@ -12,7 +12,7 @@ namespace SozlesmeSistemi.Controllers
         private readonly SozlesmeSistemiDbContext _context;
         private readonly IContractStatusService _contractStatusService;
         private readonly NotificationService _notificationService; // NotificationService eklendi
-        private readonly SozlesmeService _sozlesmeService;// NotificationService eklendi
+        private readonly SozlesmeService _sozlesmeService;
 
         public StatusController(SozlesmeSistemiDbContext context, IContractStatusService contractStatusService, NotificationService notificationService, SozlesmeService sozlesmeService)
         {

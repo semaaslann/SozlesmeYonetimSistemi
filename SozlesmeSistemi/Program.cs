@@ -14,6 +14,7 @@ builder.Services.AddScoped<IContractRequestService, ContractRequestService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IContractStatusService, ContractStatusService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();//edagrafik
+builder.Services.AddScoped<ITemplateService, TemplateService>();
 
 // SozlesmeSistemiDbContext'i ekle
 builder.Services.AddDbContext<SozlesmeSistemiDbContext>(options =>

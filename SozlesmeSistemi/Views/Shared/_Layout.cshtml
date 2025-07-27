@@ -77,6 +77,23 @@
                     int? userRole = Context.Session.GetInt32("UserRole");
                 }
                 <li class="sidebar-item">
+                    <a href="#ekBelgeler" class="sidebar-link collapsed has-dropdown d-flex align-items-center" data-bs-toggle="collapse" aria-expanded="false" aria-controls="ekBelgeler">
+                        <img src="~/icons/paperclip.png" style="width: 24px; height: 24px; margin-right: 10px;" alt="Ek Belgeler" />
+                        <span class="flex-grow-1">Ek Belgeler</span>
+                    </a>
+                    <ul id="ekBelgeler" class="sidebar-dropdown list-unstyled collapse">
+                        <li class="sidebar-item">
+                            <a asp-controller="Template" asp-action="Ekle" class="sidebar-link">Ek Belge Ekle</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a asp-controllser="Template" asp-action="Liste" class="sidebar-link">Ek Belgeleri Listele</a>
+                        </li>
+                    </ul>
+                </li>
+
+
+
+                <li class="sidebar-item">
                     <a href="#contractRequests" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" aria-expanded="false" aria-controls="contractRequests">
                         <img src="~/icons/images1.png" alt="Sözleşme İstekleri" style="width: 20px; height: 20px;" />
                         <span>Sözleşme İstekleri</span>
@@ -113,6 +130,7 @@
                         }
                     </ul>
                 </li>
+                
 
                 <li class="sidebar-item">
                     <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#multi" aria-expanded="false" aria-controls="multi">

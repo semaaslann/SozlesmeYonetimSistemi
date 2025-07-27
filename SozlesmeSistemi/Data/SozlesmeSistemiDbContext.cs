@@ -34,9 +34,11 @@ namespace SozlesmeSistemi.Data
 
         public DbSet<ContractSigners> ContractSigners { get; set; } // Bu satır mutlaka olmalı
         public DbSet<ContractParaf> ContractParafs { get; set; }
+        public DbSet<ContractAttachment> ContractAttachments { get; set; }
+        public DbSet<Template> Templates { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=LAPTOP-4802G7MU\\SQLEXPRESS;Database=SozlesmeSistemiDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Server=DESKTOP-9UCLCNC\\SQLEXPRESS;Database=SozlesmeSistemiDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
